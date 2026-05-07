@@ -5,7 +5,7 @@ export async function buscarDadosRelatorio(filtros: RelatorioFiltros): Promise<{
   gastos: GastoComRelacoes[]
   resumo: ResumoRelatorio
 }> {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   let query = supabase
     .from("gastos")
@@ -49,7 +49,7 @@ export async function buscarDadosRelatorio(filtros: RelatorioFiltros): Promise<{
 }
 
 export async function buscarLogExportacoes() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data } = await supabase
     .from("log_exportacoes")
     .select("*, usuario:usuarios(nome, email)")

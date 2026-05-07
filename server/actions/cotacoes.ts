@@ -11,7 +11,7 @@ export async function criarCotacao(data: z.infer<typeof CotacaoSchema>) {
   const parsed = CotacaoSchema.safeParse(data)
   if (!parsed.success) return { error: parsed.error.flatten() }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { count } = await supabase.from("cotacoes").select("id", { count: "exact" }).eq("gasto_id", parsed.data.gastoId)
   if ((count ?? 0) >= 3) return { error: "Este gasto já possui 3 cotações (máximo permitido)." }
 
@@ -33,7 +33,7 @@ export async function criarCotacao(data: z.infer<typeof CotacaoSchema>) {
 export async function aprovarCotacao(cotacaoId: string, gastoId: string) {
   if (IS_DEMO) return { success: true }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   await supabase.from("cotacoes").update({ aprovada: false }).eq("gasto_id", gastoId)
   const { error } = await supabase.from("cotacoes").update({ aprovada: true }).eq("id", cotacaoId)
   if (error) return { error: error.message }
@@ -46,7 +46,7 @@ export async function aprovarCotacao(cotacaoId: string, gastoId: string) {
 export async function excluirCotacao(id: string, gastoId: string) {
   if (IS_DEMO) return { success: true }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { error } = await supabase.from("cotacoes").delete().eq("id", id)
   if (error) return { error: error.message }
 
@@ -58,7 +58,7 @@ export async function excluirCotacao(id: string, gastoId: string) {
 export async function salvarArquivoCotacao(cotacaoId: string, gastoId: string, path: string) {
   if (IS_DEMO) return { success: true }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: urlData } = supabase.storage.from("crm-financeiro").getPublicUrl(path)
   const { error } = await supabase.from("cotacoes").update({ arquivo: urlData.publicUrl }).eq("id", cotacaoId)
   if (error) return { error: error.message }

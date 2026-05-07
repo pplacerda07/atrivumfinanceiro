@@ -6,7 +6,7 @@ import { IS_DEMO, getDemoDashboard } from "@/lib/demo-data"
 export async function buscarDadosDashboard(): Promise<DashboardData> {
   if (IS_DEMO) return getDemoDashboard()
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const periodo = periodoAtual()
   const [ano, mes] = periodo.split("-")
   const dataInicio = `${ano}-${mes}-01`

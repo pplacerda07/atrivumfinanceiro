@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(getDemoResumoRelatorio(inicio, fim))
   }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: "Não autenticado" }, { status: 401 })
 

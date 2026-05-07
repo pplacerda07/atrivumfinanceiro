@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const inicio = searchParams.get("inicio")!
   const fim = searchParams.get("fim")!
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: "Não autenticado" }, { status: 401 })
 
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
       gastos: (gastos ?? []) as any,
       periodo: { inicio, fim },
       orcamentoTotal: orcamentoRes.data?.total ?? 0,
-    })
+    }) as React.ReactElement<any>
   )
 
   await supabase.from("log_exportacoes").insert({
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     formato: "pdf",
   })
 
-  return new NextResponse(buffer, {
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="relatorio-${inicio}-${fim}.pdf"`,

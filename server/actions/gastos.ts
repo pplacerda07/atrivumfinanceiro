@@ -12,7 +12,7 @@ export async function criarGasto(data: z.infer<typeof GastoSchema>) {
   const parsed = GastoSchema.safeParse(data)
   if (!parsed.success) return { error: parsed.error.flatten() }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Não autenticado" }
 
@@ -43,7 +43,7 @@ export async function criarGastoForçado(data: z.infer<typeof GastoSchema>) {
   const parsed = GastoSchema.safeParse(data)
   if (!parsed.success) return { error: parsed.error.flatten() }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { error } = await supabase.from("gastos").insert({
     data: parsed.data.data, descricao: parsed.data.descricao, valor: parsed.data.valor,
     categoria_id: parsed.data.categoriaId, responsavel_id: parsed.data.responsavelId,
@@ -61,7 +61,7 @@ export async function editarGasto(id: string, data: z.infer<typeof GastoSchema>)
   const parsed = GastoSchema.safeParse(data)
   if (!parsed.success) return { error: parsed.error.flatten() }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: gasto } = await supabase.from("gastos").select("bloqueado").eq("id", id).single()
   if (gasto?.bloqueado) return { error: "Este gasto está bloqueado pois consta em um relatório exportado." }
 
@@ -80,7 +80,7 @@ export async function editarGasto(id: string, data: z.infer<typeof GastoSchema>)
 export async function excluirGasto(id: string) {
   if (IS_DEMO) redirect("/gastos")
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: gasto } = await supabase.from("gastos").select("bloqueado").eq("id", id).single()
   if (gasto?.bloqueado) return { error: "Este gasto está bloqueado pois consta em um relatório exportado." }
 
@@ -95,7 +95,7 @@ export async function excluirGasto(id: string) {
 export async function bloquearGastos(ids: string[]) {
   if (IS_DEMO) return { success: true }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { error } = await supabase.from("gastos").update({ bloqueado: true }).in("id", ids)
   if (error) return { error: error.message }
   revalidatePath("/gastos")

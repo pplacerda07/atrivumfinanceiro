@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const inicio = searchParams.get("inicio")!
   const fim = searchParams.get("fim")!
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: "Não autenticado" }, { status: 401 })
 

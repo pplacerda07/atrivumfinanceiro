@@ -12,7 +12,7 @@ export async function definirOrcamento(data: z.infer<typeof OrcamentoSchema>) {
   const parsed = OrcamentoSchema.safeParse(data)
   if (!parsed.success) return { error: parsed.error.flatten() }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: existente } = await supabase.from("orcamento").select("id").eq("periodo", parsed.data.periodo).maybeSingle()
 
   if (existente) {
@@ -31,7 +31,7 @@ export async function definirOrcamento(data: z.infer<typeof OrcamentoSchema>) {
 export async function buscarOrcamentoAtual() {
   if (IS_DEMO) return DEMO_ORCAMENTO
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const periodo = periodoAtual()
   const { data } = await supabase.from("orcamento").select("*").eq("periodo", periodo).maybeSingle()
   return data
@@ -43,7 +43,7 @@ export async function criarCategoria(data: z.infer<typeof CategoriaSchema>) {
   const parsed = CategoriaSchema.safeParse(data)
   if (!parsed.success) return { error: parsed.error.flatten() }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { error } = await supabase.from("categorias").insert({ nome: parsed.data.nome })
   if (error) return { error: error.message }
 
@@ -55,7 +55,7 @@ export async function criarCategoria(data: z.infer<typeof CategoriaSchema>) {
 export async function editarCategoria(id: string, nome: string) {
   if (IS_DEMO) return { success: true }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { error } = await supabase.from("categorias").update({ nome }).eq("id", id)
   if (error) return { error: error.message }
 
@@ -67,7 +67,7 @@ export async function editarCategoria(id: string, nome: string) {
 export async function excluirCategoria(id: string) {
   if (IS_DEMO) return { success: true }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { error } = await supabase.from("categorias").delete().eq("id", id)
   if (error) return { error: error.message }
 
@@ -78,7 +78,7 @@ export async function excluirCategoria(id: string) {
 export async function buscarTodosUsuarios() {
   if (IS_DEMO) return DEMO_USUARIOS
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data } = await supabase.from("usuarios").select("*").order("nome")
   return data ?? []
 }
@@ -86,7 +86,7 @@ export async function buscarTodosUsuarios() {
 export async function buscarTodasCategorias() {
   if (IS_DEMO) return DEMO_CATEGORIAS
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data } = await supabase.from("categorias").select("*").order("nome")
   return data ?? []
 }

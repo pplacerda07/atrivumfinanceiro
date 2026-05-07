@@ -16,7 +16,7 @@ export async function buscarGastos(filtros?: FiltrosGasto): Promise<GastoComRela
     return gastos
   }
 
-  const supabase = createClient()
+  const supabase = await createClient()
   let query = supabase
     .from("gastos")
     .select(`*, categoria:categorias(id, nome), responsavel:usuarios(id, nome, email, perfil), comprovantes(id, arquivo, tipo, criado_em), cotacoes(id, fornecedor, valor, aprovada, data_cotacao, prazo, observacoes, arquivo)`)
@@ -41,7 +41,7 @@ export async function buscarGastos(filtros?: FiltrosGasto): Promise<GastoComRela
 export async function buscarGastoPorId(id: string): Promise<GastoComRelacoes | null> {
   if (IS_DEMO) return DEMO_GASTOS.find((g) => g.id === id) ?? null
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from("gastos")
     .select(`*, categoria:categorias(id, nome), responsavel:usuarios(id, nome, email, perfil), comprovantes(*), cotacoes(*)`)
